@@ -22,26 +22,12 @@ struct PhoneNumberVerificationView: View {
                 .multilineTextAlignment(.center)
                 .fontWeight(.bold)
                 .padding(.top, 10)
-            
-            VStack(spacing: 10) {
-                Text("Want to keep a journal but can't find the time? Call-to-Journal lets you record your thoughts anytime, anywhere—whether you're on your commute, taking a walk, or just need to talk it out.")
-                    .font(.subheadline)
-                    .foregroundStyle(.white)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
 
-                Text("Your recorded entries are a treasure trove of insights, helping you track your personal growth and recognize patterns over time.")
-                    .font(.subheadline)
-                    .foregroundStyle(.white)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-            }
-            
-            VStack(spacing: 5) {
+            VStack(spacing: 10) {
                 if sendCount < 5 {
                     Text("We'll send you a code to verify your phone number")
                         .font(.subheadline)
-                        .foregroundStyle(.gray)
+                        .foregroundStyle(.white)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
                 } else {
@@ -78,6 +64,14 @@ struct PhoneNumberVerificationView: View {
                 }
                 .padding(.horizontal)
             }
+            
+            VStack(spacing: 10) {
+                Text("Want to keep a journal but can't find the time? Call-to-Journal lets you record your thoughts anytime, anywhere. Your recorded entries are a treasure trove of insights, helping you track your personal growth and recognize patterns over time.")
+            }
+            .font(.subheadline)
+            .foregroundStyle(.white)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal)
             if let result = viewModel.verificationResult {
                     Button(action: {}) {
                         switch result {
@@ -196,6 +190,8 @@ struct CustomTextField: View {
                     .stroke(isValid ? Color.gray.opacity(0.3) : Color.red, lineWidth: 2)
             )
             .textContentType(contentType)
+            .scrollDismissesKeyboard(.immediately)
+            .keyboardType(.namePhonePad)
     }
 }
 

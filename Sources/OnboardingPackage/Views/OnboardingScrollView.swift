@@ -40,9 +40,7 @@ public struct OnboardingScrollView: View {
                         .ignoresSafeArea()
                     }
                     .ignoresSafeArea()
-                    VStack {
-                        CustomScrollIndicator(currentPage: $stateManager.currentPage, numberOfPages: configuration.views.count)
-                    }
+                    CustomScrollIndicator(currentPage: $stateManager.currentPage, numberOfPages: configuration.views.count)
                     .padding(.bottom, 20)
                 }
 
