@@ -41,7 +41,6 @@ public struct OnboardingScrollView: View {
                     }
                     .ignoresSafeArea()
                     CustomScrollIndicator(currentPage: $stateManager.currentPage, numberOfPages: configuration.views.count)
-                    .padding(.bottom, 20)
                 }
 
             }
@@ -66,11 +65,8 @@ public struct OnboardingScrollView: View {
         views: [
             AnyView(WelcomeView()),
             AnyView(PermissionRequestView(permissions: [.notifications, .mic, .camera])),
-            AnyView(PhoneNumberVerificationView()),
-            AnyView(Text("Discover new features!")),
-            AnyView(Text("Discover new features!")),
-            AnyView(Text("Let's get started!")),
-            AnyView(Text("Let's get started!"))
+            AnyView(RegisterNewUserView(viewModel: RegisterNewUserViewModel())),
+            AnyView(PhoneNumberVerificationView(viewModel: PhoneVerificationViewModel()))
          ]
      ))
 })

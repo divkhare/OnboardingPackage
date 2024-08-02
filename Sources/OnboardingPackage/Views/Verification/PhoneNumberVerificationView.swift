@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PhoneNumberVerificationView: View {
-    @StateObject private var viewModel = PhoneVerificationViewModel()
+    @ObservedObject var viewModel: PhoneVerificationViewModel
     @State private var isShowingCountryPicker = false
     @State private var shouldShiver = false
     @State private var isPhoneNumberValid = true
@@ -68,7 +68,7 @@ struct PhoneNumberVerificationView: View {
             VStack(spacing: 10) {
                 Text("Want to keep a journal but can't find the time? Call-to-Journal lets you record your thoughts anytime, anywhere. Your recorded entries are a treasure trove of insights, helping you track your personal growth and recognize patterns over time.")
             }
-            .font(.subheadline)
+            .font(.subheadline).bold()
             .foregroundStyle(.white)
             .multilineTextAlignment(.center)
             .padding(.horizontal)
@@ -235,7 +235,7 @@ struct PhoneNumberVerificationView_Previews: PreviewProvider {
     static var previews: some View {
         ZStack {
             Color.white
-            PhoneNumberVerificationView()
+            PhoneNumberVerificationView(viewModel: PhoneVerificationViewModel())
         }
     }
 }
