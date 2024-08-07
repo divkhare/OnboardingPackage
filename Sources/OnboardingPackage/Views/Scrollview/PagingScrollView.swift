@@ -5,7 +5,6 @@
 //  Created by Div Khare on 7/26/24.
 //
 
-import Foundation
 import SwiftUI
 
 struct PagingScrollView<Content: View>: UIViewRepresentable {
@@ -24,7 +23,7 @@ struct PagingScrollView<Content: View>: UIViewRepresentable {
     }
 
     func makeUIView(context: Context) -> UIScrollView {
-        let scrollView = UIScrollView()
+        let scrollView = KeyboardAwareScrollView()
         scrollView.isPagingEnabled = true
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.delegate = context.coordinator
@@ -61,6 +60,45 @@ struct PagingScrollView<Content: View>: UIViewRepresentable {
         func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
             let page = Int(scrollView.contentOffset.x / scrollView.frame.size.width)
             parent.currentPage = page
+        }
+    }
+}
+
+class KeyboardAwareScrollView: UIScrollView {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupKeyboardObservers()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupKeyboardObservers()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    private func setupKeyboardObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    @objc private func keyboardWillShow(notification: Notification) {
+        guard let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        let keyboardRectangle = keyboardFrame.cgRectValue
+        let keyboardHeight = keyboardRectangle.height
+
+        UIView.animate(withDuration: 0.3) {
+            self.contentInset.bottom = keyboardHeight
+            self.verticalScrollIndicatorInsets.bottom = keyboardHeight
+        }
+    }
+
+    @objc private func keyboardWillHide(notification: Notification) {
+        UIView.animate(withDuration: 0.3) {
+            self.contentInset.bottom = 0
+            self.verticalScrollIndicatorInsets.bottom = 0
         }
     }
 }

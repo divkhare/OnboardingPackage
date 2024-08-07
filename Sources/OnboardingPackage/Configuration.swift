@@ -66,12 +66,3 @@ public enum PermissionType {
         }
     }
 }
-
-/// Configuration for driving Onboaridng
-public struct Configuration {
-    let views: [AnyView]
-
-    public init(views: [AnyView]) {
-        self.views = views
-    }
-}

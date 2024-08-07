@@ -9,21 +9,25 @@ import Foundation
 import Combine
 
 public class RegisterNewUserViewModel: ObservableObject {
-    @Published var name: String = ""
-    @Published var emailAddress: String = ""
-    @Published var password: String = ""
-    @Published var confirmedPassword: String = ""
-    @Published var isEmailValid: Bool = true
-    @Published var showErrorAlert: Bool = false
-    @Published var errorMessage: String = ""
-    @Published var isLoading: Bool = false
-    @Published var registrationInfo: RegistrationInfo?
+    @Published public var name: String = ""
+    @Published public var emailAddress: String = ""
+    @Published public var password: String = ""
+    @Published public var confirmedPassword: String = ""
+    @Published public var isEmailValid: Bool = true
+    @Published public var showErrorAlert: Bool = false
+    @Published public var errorMessage: String = ""
+    @Published public var isLoading: Bool = false
+    @Published public var registrationInfo: RegistrationInfo?
     private var cancellables = Set<AnyCancellable>()
-    
-    public init() {
+
+    // Callback property for signup
+    private var signupCallback: ((RegistrationInfo) -> Void)?
+
+    public init(signupCallback: @escaping (RegistrationInfo) -> Void) {
+        self.signupCallback = signupCallback
         setupValidation()
     }
-    
+
     private func setupValidation() {
         $emailAddress
             .debounce(for: 0.5, scheduler: RunLoop.main)
@@ -32,21 +36,26 @@ public class RegisterNewUserViewModel: ObservableObject {
             .assign(to: \.isEmailValid, on: self)
             .store(in: &cancellables)
     }
-    
+
     private func validate(email: String) -> Bool {
         let emailPattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
         let emailPred = NSPredicate(format: "SELF MATCHES %@", emailPattern)
         return emailPred.evaluate(with: email)
     }
-    
-    var isFormValid: Bool {
+
+    public var isFormValid: Bool {
         !name.isEmpty &&
         isEmailValid &&
         !password.isEmpty &&
         password == confirmedPassword
     }
-    
-    func attemptSignup() {
+
+    // Method to set the signup callback
+    public func setSignupCallback(_ callback: @escaping (RegistrationInfo) -> Void) {
+        self.signupCallback = callback
+    }
+
+    public func attemptSignup() {
         guard isFormValid else {
             showErrorAlert = true
             errorMessage = "Please check your information and try again."
@@ -55,13 +64,17 @@ public class RegisterNewUserViewModel: ObservableObject {
         
         isLoading = true
         
-        // Simulate network delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.registrationInfo = RegistrationInfo(
-                name: self.name,
-                email: self.emailAddress,
-                password: self.password
-            )
+        let registrationInfo = RegistrationInfo(
+            name: self.name,
+            email: self.emailAddress,
+            password: self.password
+        )
+        
+        // Call the signup callback if it's set
+        signupCallback?(registrationInfo)
+        
+        // Reset loading state
+        DispatchQueue.main.async {
             self.isLoading = false
         }
     }

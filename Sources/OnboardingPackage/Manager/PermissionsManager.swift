@@ -18,7 +18,7 @@ class PermissionsManager: ObservableObject {
     @Published var cameraPermissionGranted: Bool = false
     
     private init() {
-        Task {
+        Task { @MainActor in
             self.micPermissionGranted = await checkMicrophonePermissionStatus()
             self.notificationsPermissionGranted = await checkPushNotificationPermissionStatus()
             self.cameraPermissionGranted = await checkCameraPermissionStatus()

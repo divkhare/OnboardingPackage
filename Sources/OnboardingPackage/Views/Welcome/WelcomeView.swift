@@ -8,8 +8,14 @@
 import Foundation
 import SwiftUI
 
-struct WelcomeView: View {
-    var body: some View {
+public struct WelcomeView: View {
+    private let thisViewIndex: Int
+
+    public init(thisViewIndex: Int) {
+        self.thisViewIndex = thisViewIndex
+    }
+
+    public var body: some View {
         VStack {
             Spacer()
             Image("murmurLogo", bundle: .module)
@@ -78,7 +84,6 @@ struct FeatureCardView: View {
                 }
                 .padding()
             }
-            .frame(width: .infinity)
             .background(Color.white.opacity(0.9))
             .cornerRadius(10)
             .shadow(radius: 5)
@@ -93,7 +98,7 @@ struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
         ZStack {
             Color.blue
-            WelcomeView()
+            WelcomeView(thisViewIndex: 0)
         }
     }
 }

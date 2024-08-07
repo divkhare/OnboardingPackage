@@ -13,38 +13,44 @@ private enum Constants {
     static let backgroundImageParallaxOffset: CGFloat = 1.5
 }
 
-public struct OnboardingScrollView: View {
+public struct OnboardingScrollView<Content: View>: View {
     @StateObject private var motionManager = MotionManager()
-    @StateObject private var stateManager = StateManager()
+    @StateObject private var stateManager = OnboardingStateManager.shared
 
-    private var configuration: Configuration
+    private let content: Content
+    private let pageCount: Int
     
-    public init(configuration: Configuration) {
-        self.configuration = configuration
+    public init(pageCount: Int, @ViewBuilder content: () -> Content) {
+        self.content = content()
+        self.pageCount = pageCount
     }
 
     public var body: some View {
-        GeometryReader { globalGeometry in
-            ScrollViewReader { value in
-                ZStack(alignment: .bottom) {
-                    PagingScrollView(currentPage: $stateManager.currentPage, pageCount: configuration.views.count) {
-                        ZStack(alignment: .center) {
-                            backgroundImage
-                            HStack(spacing: 0) {
-                                ForEach(configuration.views.indices, id: \.self) { index in
-                                    configuration.views[index]
-                                        .frame(width: globalGeometry.size.width)
-                                }
-                            }
-                        }
-                        .ignoresSafeArea()
+        ScrollViewReader { proxy in
+            ZStack(alignment: .bottom) {
+                PagingScrollView(currentPage: $stateManager.currentPage, pageCount: pageCount) {
+                    ZStack {
+                        backgroundImage
+                        content
+                            .id(stateManager.currentPage) // Add ID here
+                            .environmentObject(stateManager)
                     }
                     .ignoresSafeArea()
-                    CustomScrollIndicator(currentPage: $stateManager.currentPage, numberOfPages: configuration.views.count)
                 }
-
+                .ignoresSafeArea()
+                CustomScrollIndicator(currentPage: $stateManager.currentPage, numberOfPages: pageCount)
+            }
+            .onChange(of: stateManager.verifiedPhone) { newValue in
+                guard let _ = newValue else { return }
+                if stateManager.currentPage < pageCount - 1 {
+                    withAnimation {
+                        stateManager.currentPage += 1
+                        proxy.scrollTo(stateManager.currentPage, anchor: .center)
+                    }
+                }
             }
         }
+        .environment(\.currentPage, stateManager.currentPage)
     }
 
     private var backgroundImage: some View {
@@ -52,22 +58,25 @@ public struct OnboardingScrollView: View {
             Image("backgroundImage", bundle: .module)
                 .resizable()
                 .scaledToFill()
-                .frame(width: CGFloat(configuration.views.count) * Constants.backgroundImageWidthOffset,
+                .frame(width: CGFloat(pageCount) * Constants.backgroundImageWidthOffset,
                        height: scrollGeometry.frame(in: .global).height + Constants.backgroundImageHeightOffset)
                 .offset(x: -scrollGeometry.frame(in: .global).minX / Constants.backgroundImageParallaxOffset)
         }
     }
 }
 
+#Preview {
+    @StateObject var stateManager = OnboardingStateManager.shared
 
-#Preview(body: {
-    OnboardingScrollView(configuration: Configuration(
-        views: [
-            AnyView(WelcomeView()),
-            AnyView(PermissionRequestView(permissions: [.notifications, .mic, .camera])),
-            AnyView(RegisterNewUserView(viewModel: RegisterNewUserViewModel())),
-            AnyView(PhoneNumberVerificationView(viewModel: PhoneVerificationViewModel()))
-         ]
-     ))
-})
-
+    return OnboardingScrollView(pageCount: 4) {
+        HStack(spacing: 0) {
+            WelcomeView(thisViewIndex: 0)
+            PermissionRequestView(permissions: [.notifications, .mic, .camera], thisViewIndex: 1)
+            RegisterNewUserView(viewModel: RegisterNewUserViewModel(signupCallback: { info in
+                print(info)
+            }), thisViewIndex: 2)
+            PhoneNumberVerificationView(viewModel: PhoneVerificationViewModel(), thisViewIndex: 3)
+        }
+    }
+    .environmentObject(stateManager)
+}

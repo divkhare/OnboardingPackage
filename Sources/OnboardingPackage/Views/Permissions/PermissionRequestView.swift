@@ -12,13 +12,15 @@ public struct PermissionRequestView: View {
     @ObservedObject private var permissionManager = PermissionsManager.shared
     let permissions: [PermissionType]
     @State private var animateGradient = false
+    private let thisViewIndex: Int
 
-    public init?(permissions: [PermissionType]) {
+    public init?(permissions: [PermissionType], thisViewIndex: Int) {
         guard permissions.count <= 4 else {
             print("Exceeded maximum permissions allowed")
             return nil
         }
         self.permissions = permissions
+        self.thisViewIndex = thisViewIndex
     }
 
     public var body: some View {
@@ -65,15 +67,15 @@ public struct PermissionRequestView: View {
     }
 }
 
-#Preview(body: {
-    OnboardingScrollView(configuration: Configuration(
-        views: [
-            AnyView(WelcomeView()),
-            AnyView(PermissionRequestView(permissions: [.notifications, .mic, .camera])),
-            AnyView(Text("Discover new features!")),
-            AnyView(Text("Discover new features!")),
-            AnyView(Text("Let's get started!")),
-            AnyView(Text("Let's get started!"))
-         ]
-     ))
-})
+#Preview {
+    OnboardingScrollView(pageCount: 4) {
+        HStack(spacing: 0) {
+            WelcomeView(thisViewIndex: 0)
+            PermissionRequestView(permissions: [.notifications, .mic, .camera], thisViewIndex: 1)
+            RegisterNewUserView(viewModel: RegisterNewUserViewModel(signupCallback: { info in
+                print(info)
+            }), thisViewIndex: 2)
+            PhoneNumberVerificationView(viewModel: PhoneVerificationViewModel(), thisViewIndex: 3)
+        }
+    }
+}

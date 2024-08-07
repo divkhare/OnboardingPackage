@@ -20,7 +20,8 @@ enum VerificationResult {
     case failure(String)
 }
 
-class PhoneVerificationViewModel: ObservableObject {
+public class PhoneVerificationViewModel: ObservableObject {
+    var stateManager = OnboardingStateManager.shared
     @Published var phoneNumber = ""
     @Published var selectedCountry: Country
     @Published var isVerifying = false
@@ -35,7 +36,7 @@ class PhoneVerificationViewModel: ObservableObject {
     ]
     private var cancellables = Set<AnyCancellable>()
 
-    init() {
+    public init() {
         self.selectedCountry = countries[0]
     }
 
@@ -64,7 +65,7 @@ class PhoneVerificationViewModel: ObservableObject {
                 switch completion {
                 case .finished:
                     break
-                case .failure(let error):
+                case .failure(_):
                     self.isSending = false
                     self.messageSent = false
                 }
@@ -89,12 +90,14 @@ class PhoneVerificationViewModel: ObservableObject {
             "countryCode": selectedCountry.code,
             "code": verificationCode
         ]
-
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-
         URLSession.shared.dataTaskPublisher(for: request)
-            .map(\.data)
-            .decode(type: ValidateVerificationResponse.self, decoder: JSONDecoder())
+            .tryMap { data, response -> Bool in
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    throw URLError(.badServerResponse)
+                }
+                return httpResponse.statusCode == 200
+            }
             .receive(on: DispatchQueue.main)
             .sink { completion in
                 switch completion {
@@ -105,9 +108,11 @@ class PhoneVerificationViewModel: ObservableObject {
                     self.resetVerificationResultAfterDelay()
                 }
                 self.isSending = false
-            } receiveValue: { response in
-                if response.isValid {
+            } receiveValue: { [weak self] isSuccess in
+                guard let self else { return }
+                if isSuccess {
                     self.verificationResult = .success
+                    stateManager.verifiedPhone = "\(self.selectedCountry.code)\(self.phoneNumber)"
                 } else {
                     self.verificationResult = .failure("Invalid verification code")
                     self.resetVerificationResultAfterDelay()
@@ -129,5 +134,5 @@ struct SendVerificationResponse: Codable {
 }
 
 struct ValidateVerificationResponse: Codable {
-    let isValid: Bool
+    let message: String
 }

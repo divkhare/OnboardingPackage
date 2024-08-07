@@ -1,6 +1,6 @@
 //
 //  RegistrationInfo.swift
-//  
+//
 //
 //  Created by Div Khare on 8/1/24.
 //
