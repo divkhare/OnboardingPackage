@@ -29,6 +29,7 @@ public class PhoneVerificationViewModel: ObservableObject {
     @Published var messageSent = false
     @Published var verificationResult: VerificationResult?
     @Published var verificationCode = ""
+    var onVerificationSuccess: (() -> Void)?
 
     let countries: [Country] = [
         Country(name: "United States", code: "+1", flag: "🇺🇸"),
@@ -104,17 +105,18 @@ public class PhoneVerificationViewModel: ObservableObject {
                 case .finished:
                     break
                 case .failure(let error):
-                    self.verificationResult = nil
+                    self.verificationResult = .failure(error.localizedDescription)
                     self.resetVerificationResultAfterDelay()
                 }
                 self.isSending = false
             } receiveValue: { [weak self] isSuccess in
-                guard let self else { return }
+                guard let self = self else { return }
                 if isSuccess {
                     self.verificationResult = .success
-                    stateManager.verifiedPhone = "\(self.selectedCountry.code)\(self.phoneNumber)"
+                    self.stateManager.verifiedPhone = "\(self.selectedCountry.code)\(self.phoneNumber)"
+                    self.onVerificationSuccess?()  // Call the success callback
                 } else {
-                    self.verificationResult = nil
+                    self.verificationResult = .failure("Verification failed")
                     self.resetVerificationResultAfterDelay()
                 }
             }

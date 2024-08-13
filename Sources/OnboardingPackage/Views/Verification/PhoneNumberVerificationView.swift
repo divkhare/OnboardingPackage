@@ -184,19 +184,18 @@ public struct PhoneNumberVerificationView: View {
     }
 
     private func handleSendOrVerify() {
-        if viewModel.messageSent {
-            viewModel.validateVerificationCode()
-            if let _ = viewModel.verificationResult {
-                onVerificationSuccess?() // Trigger the callback on success
-            }
-        } else if validatePhoneNumber() && sendCount < 5 {
-            sendCount += 1
-            viewModel.sendVerificationCode()
-        } else {
-            isPhoneNumberValid = false
-            shouldShiver.toggle()
-        }
-    }
+         if viewModel.messageSent {
+             viewModel.validateVerificationCode()
+             // Remove the immediate check for verification result
+             // as it won't be available synchronously
+         } else if validatePhoneNumber() && sendCount < 5 {
+             sendCount += 1
+             viewModel.sendVerificationCode()
+         } else {
+             isPhoneNumberValid = false
+             shouldShiver.toggle()
+         }
+     }
 
     private var privacyText: some View {
         Text("We value your privacy and trust. Please be assured that no calls are recorded or sold, and no data is collected from your interactions.")

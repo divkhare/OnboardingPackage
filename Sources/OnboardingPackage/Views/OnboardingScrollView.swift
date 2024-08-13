@@ -75,7 +75,10 @@ public struct OnboardingScrollView<Content: View>: View {
             RegisterNewUserView(viewModel: RegisterNewUserViewModel(signupCallback: { info in
                 print(info)
             }), thisViewIndex: 2)
-            PhoneNumberVerificationView(viewModel: PhoneVerificationViewModel(), thisViewIndex: 3)
+            PhoneNumberVerificationView(viewModel: PhoneVerificationViewModel(), thisViewIndex: 3) {
+                print("Phone number verified successfully!")
+                // Add any additional logic you want to execute on verification success
+            }
         }
     }
     .environmentObject(stateManager)
