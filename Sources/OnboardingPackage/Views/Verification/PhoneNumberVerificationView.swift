@@ -13,7 +13,6 @@ public struct PhoneNumberVerificationView: View {
     @State private var shouldShiver = false
     @State private var isPhoneNumberValid = true
     @State private var sendCount = 0
-    @State private var isAnimating = false
     @FocusState private var isFocused: Bool
 
     @Environment(\.currentPage) var currentPage
@@ -44,9 +43,6 @@ public struct PhoneNumberVerificationView: View {
         }
         .onChange(of: viewModel.phoneNumber) { _ in
             isPhoneNumberValid = true
-        }
-        .onChange(of: currentPage) { newPage in
-            isAnimating = newPage == thisViewIndex
         }
         .onTapGesture {
             isFocused = false
@@ -126,12 +122,8 @@ public struct PhoneNumberVerificationView: View {
     private var informationView: some View {
         VStack(spacing: 10) {
             Text("Want to keep a journal but can't find the time? Call-to-Journal lets you record your thoughts anytime, anywhere. Your recorded entries are a treasure trove of insights, helping you track your personal growth.")
-                .opacity(isAnimating ? 1 : 0)
-                .animation(.easeIn.delay(0.1), value: isAnimating)
             
             Text("This simple step will weave journaling seamlessly into your routine")
-                .opacity(isAnimating ? 1 : 0)
-                .animation(.easeIn.delay(0.3), value: isAnimating)
         }
         .font(.title2).fontWeight(.semibold)
         .foregroundStyle(.white)
