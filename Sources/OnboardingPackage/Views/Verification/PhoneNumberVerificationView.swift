@@ -18,10 +18,14 @@ public struct PhoneNumberVerificationView: View {
 
     @Environment(\.currentPage) var currentPage
     private let thisViewIndex: Int
+    
+    // Add a callback property
+    private let onVerificationSuccess: (() -> Void)?
 
-    public init(viewModel: PhoneVerificationViewModel, thisViewIndex: Int) {
+    public init(viewModel: PhoneVerificationViewModel, thisViewIndex: Int, onVerificationSuccess: (() -> Void)? = nil) {
         _viewModel = ObservedObject(initialValue: viewModel)
         self.thisViewIndex = thisViewIndex
+        self.onVerificationSuccess = onVerificationSuccess
     }
 
     public var body: some View {
@@ -190,6 +194,9 @@ public struct PhoneNumberVerificationView: View {
     private func handleSendOrVerify() {
         if viewModel.messageSent {
             viewModel.validateVerificationCode()
+            if let _ = viewModel.verificationResult {
+                onVerificationSuccess?() // Trigger the callback on success
+            }
         } else if validatePhoneNumber() && sendCount < 5 {
             sendCount += 1
             viewModel.sendVerificationCode()
@@ -218,10 +225,13 @@ public struct PhoneNumberVerificationView: View {
 
 #Preview {
     @StateObject var stateManager = OnboardingStateManager.shared
-    
+
     return ZStack {
         Color.blue
-        PhoneNumberVerificationView(viewModel: PhoneVerificationViewModel(), thisViewIndex: 1)
-            .environmentObject(stateManager)
+        PhoneNumberVerificationView(viewModel: PhoneVerificationViewModel(), thisViewIndex: 1) {
+            print("Phone number verified successfully!")
+            // Add any additional logic you want to execute on verification success
+        }
+        .environmentObject(stateManager)
     }
 }

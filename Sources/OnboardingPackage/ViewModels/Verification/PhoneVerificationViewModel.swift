@@ -104,7 +104,7 @@ public class PhoneVerificationViewModel: ObservableObject {
                 case .finished:
                     break
                 case .failure(let error):
-                    self.verificationResult = .failure(error.localizedDescription)
+                    self.verificationResult = nil
                     self.resetVerificationResultAfterDelay()
                 }
                 self.isSending = false
@@ -114,7 +114,7 @@ public class PhoneVerificationViewModel: ObservableObject {
                     self.verificationResult = .success
                     stateManager.verifiedPhone = "\(self.selectedCountry.code)\(self.phoneNumber)"
                 } else {
-                    self.verificationResult = .failure("Invalid verification code")
+                    self.verificationResult = nil
                     self.resetVerificationResultAfterDelay()
                 }
             }
