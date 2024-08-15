@@ -8,10 +8,10 @@
 import Foundation
 import SwiftUI
 
-struct HideScrollIndicatorModifier: ViewModifier {
+public struct HideScrollIndicatorModifier: ViewModifier {
     let isHidden: Bool
     
-    func body(content: Content) -> some View {
+    public func body(content: Content) -> some View {
         content
             .preference(key: ScrollIndicatorVisibilityKey.self, value: !isHidden)
     }
@@ -26,7 +26,7 @@ struct ScrollIndicatorVisibilityKey: PreferenceKey {
 }
 
 extension View {
-    func hideScrollIndicator(_ isHidden: Bool) -> some View {
+    public func hideScrollIndicator(_ isHidden: Bool) -> some View {
         self.modifier(HideScrollIndicatorModifier(isHidden: isHidden))
     }
 }
