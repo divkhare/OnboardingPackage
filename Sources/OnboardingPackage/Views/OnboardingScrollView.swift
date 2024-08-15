@@ -16,6 +16,7 @@ private enum Constants {
 public struct OnboardingScrollView<Content: View>: View {
     @StateObject private var motionManager = MotionManager()
     @StateObject private var stateManager = OnboardingStateManager.shared
+    @State private var showScrollIndicator = false
 
     private let content: Content
     private let pageCount: Int
@@ -38,7 +39,9 @@ public struct OnboardingScrollView<Content: View>: View {
                     .ignoresSafeArea()
                 }
                 .ignoresSafeArea()
-                CustomScrollIndicator(currentPage: $stateManager.currentPage, numberOfPages: pageCount)
+                if showScrollIndicator {
+                    CustomScrollIndicator(currentPage: $stateManager.currentPage, numberOfPages: pageCount)
+                }
             }
             .onChange(of: stateManager.verifiedPhone) { newValue in
                 guard let _ = newValue else { return }
@@ -48,6 +51,9 @@ public struct OnboardingScrollView<Content: View>: View {
                         proxy.scrollTo(stateManager.currentPage, anchor: .center)
                     }
                 }
+            }
+            .onPreferenceChange(ScrollIndicatorVisibilityKey.self) { value in
+                       showScrollIndicator = !value
             }
         }
         .environment(\.currentPage, stateManager.currentPage)
@@ -81,5 +87,6 @@ public struct OnboardingScrollView<Content: View>: View {
             }
         }
     }
+    .hideScrollIndicator(true)
     .environmentObject(stateManager)
 }
