@@ -51,7 +51,9 @@ public struct PhoneNumberVerificationView: View {
 
     private var headerView: some View {
         Text("Verify Your Phone Number")
+            .lineLimit(2)
             .font(.largeTitle)
+            .fixedSize(horizontal: false, vertical: true)
             .foregroundStyle(.white)
             .multilineTextAlignment(.center)
             .fontWeight(.bold)
@@ -200,7 +202,9 @@ public struct PhoneNumberVerificationView: View {
 
     private var privacyText: some View {
         Text("We value your privacy and trust. Please be assured that no calls are recorded or sold, and no data is collected from your interactions.")
+            .lineLimit(3)
             .font(.callout)
+            .fixedSize(horizontal: false, vertical: true)
             .foregroundStyle(.gray)
             .multilineTextAlignment(.center)
             .padding(.horizontal)
