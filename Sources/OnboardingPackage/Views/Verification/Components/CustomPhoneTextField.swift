@@ -18,8 +18,17 @@ struct CustomPhoneTextField: View {
     
     var body: some View {
         TextField(placeholder, text: $formattedText)
+            .foregroundColor(.black)
             .onChange(of: formattedText) { newValue in
-                let filtered = newValue.filter { $0.isNumber }
+                var filtered = newValue.filter { $0.isNumber || $0 == "+" }
+                
+                // Remove "+1" if it's at the beginning
+                if filtered.hasPrefix("+1") {
+                    filtered = String(filtered.dropFirst(2))
+                } else if filtered.hasPrefix("1") {
+                    filtered = String(filtered.dropFirst())
+                }
+                
                 formattedText = formatPhoneNumber(filtered)
                 text = filtered
                 validatePhoneNumber()

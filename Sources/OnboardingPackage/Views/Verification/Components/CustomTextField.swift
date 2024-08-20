@@ -16,6 +16,7 @@ struct CustomTextField: View {
     
     var body: some View {
         TextField(placeholder, text: $text)
+            .foregroundColor(.black)
             .padding()
             .background(Color(UIColor.white))
             .cornerRadius(10)
