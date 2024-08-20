@@ -164,6 +164,9 @@ public struct PhoneNumberVerificationView: View {
             switch result {
             case .success:
                 Text("Verification successful!")
+                .onAppear(perform: {
+                    onVerificationSuccess?()
+                })
             case .failure(let string):
                 Text("Incorrect Code: \(string)")
             }
@@ -186,8 +189,6 @@ public struct PhoneNumberVerificationView: View {
     private func handleSendOrVerify() {
          if viewModel.messageSent {
              viewModel.validateVerificationCode()
-             // Remove the immediate check for verification result
-             // as it won't be available synchronously
          } else if validatePhoneNumber() && sendCount < 5 {
              sendCount += 1
              viewModel.sendVerificationCode()
