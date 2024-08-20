@@ -74,10 +74,12 @@ struct FeatureCardView: View {
                     .scaledToFit()
                     .frame(width: 20, height: 20)
                     .padding(.leading)
+                    .foregroundStyle(.black)
                 VStack(alignment: .leading, spacing: 10) {
                     Text(title)
                         .font(.title3)
                         .fontWeight(.bold)
+                        .foregroundStyle(.black)
                     Text(description)
                         .font(.subheadline)
                         .foregroundColor(.gray)
