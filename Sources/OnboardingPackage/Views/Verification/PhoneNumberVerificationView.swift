@@ -123,7 +123,7 @@ public struct PhoneNumberVerificationView: View {
 
     private var informationView: some View {
         VStack(spacing: 10) {
-            Text("Want to keep a journal but can't find the time? Call-to-Journal lets you record your thoughts anytime, anywhere. Your recorded entries are a treasure trove of insights, helping you track your personal growth.")
+            Text("Too busy to journal? With Call-to-Journal, just make a quick call to capture your thoughts on the go—whether you're driving home or taking a walk.")
             
             Text("This simple step will weave journaling seamlessly into your routine")
         }
@@ -131,6 +131,8 @@ public struct PhoneNumberVerificationView: View {
         .foregroundStyle(.white)
         .multilineTextAlignment(.center)
         .padding(.horizontal)
+        .background(Color.black.opacity(0.5))
+        .cornerRadius(20) // Add this line to give the background a corner radius
     }
 
     private var actionButton: some View {
