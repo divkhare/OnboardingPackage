@@ -32,6 +32,7 @@ public struct OnboardingScrollView<Content: View>: View {
                 PagingScrollView(currentPage: $stateManager.currentPage, pageCount: pageCount) {
                     ZStack {
                         backgroundImage
+                        Color.black.opacity(0.4)
                         content
                             .id(stateManager.currentPage) // Add ID here
                             .environmentObject(stateManager)
@@ -74,17 +75,15 @@ public struct OnboardingScrollView<Content: View>: View {
 #Preview {
     @StateObject var stateManager = OnboardingStateManager.shared
 
-    return OnboardingScrollView(pageCount: 4) {
+    return OnboardingScrollView(pageCount: 2) {
         HStack(spacing: 0) {
-            WelcomeView(thisViewIndex: 0)
-            PermissionRequestView(permissions: [.notifications, .mic, .camera], thisViewIndex: 1)
-            RegisterNewUserView(viewModel: RegisterNewUserViewModel(signupCallback: { info in
-                print(info)
-            }), thisViewIndex: 2)
-            PhoneNumberVerificationView(viewModel: PhoneVerificationViewModel(), thisViewIndex: 3) {
+            PhoneNumberVerificationView(viewModel: PhoneVerificationViewModel(), thisViewIndex: 0) {
                 print("Phone number verified successfully!")
                 // Add any additional logic you want to execute on verification success
             }
+            RegisterNewUserView(viewModel: RegisterNewUserViewModel(signupCallback: { info in
+                print(info)
+            }), thisViewIndex: 1)
         }
     }
     .hideScrollIndicator(true)

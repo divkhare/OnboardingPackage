@@ -34,7 +34,7 @@ struct CustomPhoneTextField: View {
                 validatePhoneNumber()
             }
             .padding()
-            .background(Color(UIColor.white))
+            .background(.white)
             .cornerRadius(10)
             .overlay(
                 RoundedRectangle(cornerRadius: 10)

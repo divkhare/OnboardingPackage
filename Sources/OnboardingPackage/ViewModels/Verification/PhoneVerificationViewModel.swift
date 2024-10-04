@@ -57,7 +57,6 @@ public class PhoneVerificationViewModel: ObservableObject {
         ]
         
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
         URLSession.shared.dataTaskPublisher(for: request)
             .map(\.data)
             .decode(type: SendVerificationResponse.self, decoder: JSONDecoder())
